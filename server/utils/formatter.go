@@ -1,11 +1,17 @@
 package utils
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"image/png"
+	"strings"
+
+	"github.com/skip2/go-qrcode"
 )
 
-func FormatJson(input string) (string, error) {
+// FormatJSON formats JSON with indentation
+func FormatJSON(input string) (string, error) {
 	var jsonObj interface{}
 
 	if err := json.Unmarshal([]byte(input), &jsonObj); err != nil {
@@ -16,4 +22,62 @@ func FormatJson(input string) (string, error) {
 		return "", fmt.Errorf("error formatting JSON: %v", err)
 	}
 	return string(pretty), nil
+}
+
+// DecodeJWT decodes a JWT token (without verification)
+func DecodeJWT(token string) (map[string]interface{}, error) {
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid JWT format")
+	}
+
+	// Decode header
+	headerJSON, err := base64.RawURLEncoding.DecodeString(parts[0])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode header: %v", err)
+	}
+
+	// Decode payload
+	payloadJSON, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode payload: %v", err)
+	}
+
+	var header, payload map[string]interface{}
+	json.Unmarshal(headerJSON, &header)
+	json.Unmarshal(payloadJSON, &payload)
+
+	result := map[string]interface{}{
+		"header":  header,
+		"payload": payload,
+	}
+
+	return result, nil
+}
+
+// GenerateQRCode generates a QR code and returns it as base64 PNG
+func GenerateQRCode(content string, size int) (string, error) {
+	if size == 0 {
+		size = 256
+	}
+
+	qr, err := qrcode.New(content, qrcode.Medium)
+	if err != nil {
+		return "", err
+	}
+
+	qr.DisableBorder = false
+
+	img := qr.Image(size)
+
+	// Encode to PNG and then to base64
+	var buf strings.Builder
+	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
+	err = png.Encode(encoder, img)
+	if err != nil {
+		return "", err
+	}
+	encoder.Close()
+
+	return "data:image/png;base64," + buf.String(), nil
 }
