@@ -10,7 +10,6 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
-// FormatJSON formats JSON with indentation
 func FormatJSON(input string) (string, error) {
 	var jsonObj interface{}
 
@@ -24,20 +23,17 @@ func FormatJSON(input string) (string, error) {
 	return string(pretty), nil
 }
 
-// DecodeJWT decodes a JWT token (without verification)
 func DecodeJWT(token string) (map[string]interface{}, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
 		return nil, fmt.Errorf("invalid JWT format")
 	}
 
-	// Decode header
 	headerJSON, err := base64.RawURLEncoding.DecodeString(parts[0])
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode header: %v", err)
 	}
 
-	// Decode payload
 	payloadJSON, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode payload: %v", err)
@@ -55,7 +51,6 @@ func DecodeJWT(token string) (map[string]interface{}, error) {
 	return result, nil
 }
 
-// GenerateQRCode generates a QR code and returns it as base64 PNG
 func GenerateQRCode(content string, size int) (string, error) {
 	if size == 0 {
 		size = 256
@@ -70,7 +65,6 @@ func GenerateQRCode(content string, size int) (string, error) {
 
 	img := qr.Image(size)
 
-	// Encode to PNG and then to base64
 	var buf strings.Builder
 	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
 	err = png.Encode(encoder, img)
