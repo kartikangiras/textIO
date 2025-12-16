@@ -108,8 +108,6 @@ func ConvertCase(text, caseType string) string {
 		return toPascalCase(text)
 	case "snake_case":
 		return toSnakeCase(text)
-	case "kebab-case":
-		return toKebabCase(text)
 	case "CONSTANT_CASE":
 		return toConstantCase(text)
 	default:
