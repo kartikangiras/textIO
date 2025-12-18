@@ -1,4 +1,4 @@
-import { FormatterView } from './features/formatter/FormatterView';
+import { formatterView } from './features/formatter/formatterView';
 
 function App() {
   return (
