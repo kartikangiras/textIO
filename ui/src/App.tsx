@@ -4,7 +4,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800">TextForge Go</h1>
+        <h1 className="text-3xl font-bold text-gray-800">TextForge</h1>
         <p className="text-gray-600">Golang Backend + React Frontend</p>
       </header>
       
