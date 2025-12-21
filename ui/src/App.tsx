@@ -1,6 +1,16 @@
+import { useState } from 'react';
 import { formatterView } from './features/formatter/formatterView';
 
 function App() {
+  const [activeTool, setActiveTool] = useState([0]);
+  const [input, setInput] = useState([]);
+  const [output, setOutput] = useState([0]);
+  const [theme, isDark] = useState([0]);
+
+
+
+
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <header className="mb-8 text-center">
