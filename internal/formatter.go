@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 func marshalInterface() ([]byte, error) {
@@ -32,7 +33,7 @@ func kvJson() {
 	if err != nil {
 		return fmt.Errorf("failed to retreive data", err)
 	}
-
+	entries := strings.Split(input, "\n")[0]
 	data := make(map[string]string)
 
 }
