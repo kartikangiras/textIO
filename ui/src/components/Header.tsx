@@ -21,3 +21,29 @@ const Header: React.FC<HeaderProps> = ({ isDark, onThemeToggle }) => {
             </p>
           </div>
         </div>
+        {/* Actions */}
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={onThemeToggle}
+            className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            title="Toggle theme"
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+          
+          <a
+            href="https://github.com/seehiong/text-forge"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            title="View on GitHub"
+          >
+            <Github className="w-5 h-5" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Header;
