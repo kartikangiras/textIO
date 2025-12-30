@@ -25,3 +25,14 @@ const Generators: React.FC<GeneratorsProps> = ({ onOutput }) => {
       setError('Failed to generate UUID');
     }
   };
+  
+  const handlePasswordGeneration = () => {
+    try {
+      const password = generatePassword(passwordLength, passwordOptions);
+      onOutput(password);
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate password');
+    }
+  };
+}
