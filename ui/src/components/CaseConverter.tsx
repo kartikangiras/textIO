@@ -68,4 +68,3 @@ const caseConverter: React.FC<caseConverterProps> = ({input, onOutput}) => {
 };
 
 export default caseConverter;
-}

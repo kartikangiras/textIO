@@ -110,9 +110,9 @@ const handleFormat = async (action: string) => {
           Key-Value Format Example
         </h3>
         <code className="text-xs text-blue-700 dark:text-blue-300 block">
-          name=John Doe<br/>
-          age=30<br/>
-          city=New York
+          name=Kartik Angiras<br/>
+          age=20<br/>
+          city=Mars
         </code>
       </div>
     </div>
