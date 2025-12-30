@@ -38,3 +38,26 @@ const handleFormat = async (action: string) => {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
+
+   const tools = [
+    {
+      action: 'jsonBeautify',
+      label: 'Beautify JSON',
+      description: 'Format JSON with proper indentation'
+    },
+    {
+      action: 'jsonMinify',
+      label: 'Minify JSON',
+      description: 'Remove whitespace from JSON'
+    },
+    {
+      action: 'kvToJson',
+      label: 'Key-Value to JSON',
+      description: 'Convert key=value pairs to JSON object'
+    },
+    {
+      action: 'cssMinify',
+      label: 'Minify CSS',
+      description: 'Remove comments and whitespace from CSS'
+    }
+  ];
