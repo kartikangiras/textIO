@@ -23,4 +23,16 @@ const ToolButton: React.FC<ToolButtonProps> = ({
     danger: 'bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400'
   };
 
-  
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+export default ToolButton;
