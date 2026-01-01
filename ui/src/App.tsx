@@ -7,21 +7,101 @@ function App() {
   const [output, setOutput] = useState([0]);
   const [theme, isDark] = useState([0]);
 
+  const stats = getTextStats(input);
 
+  const toolNeedsInput = activeTool !== 'generators';
 
+  const renderToolComponent = () => {
+    const props = {input, onOutput: setOutput };
 
+    switch(activeTool) {
+      case 'cleanup':
+        return <TextCleanup {...props} />;
+      case 'case':
+        return <CaseConverter {...props} />;
+      case 'format':
+        return <CodeFormatter {...props} />;
+      case 'encoding':
+        return <EncodingTools {...props} />;
+      case 'generators':
+        return <Generators onOutput={setOutput} />;
+      default:
+        return <TextCleanup {...props} />;
+    }
+  };
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800">TextForge</h1>
-        <p className="text-gray-600">Golang Backend + React Frontend</p>
-      </header>
-      
-      <main className="max-w-4xl mx-auto">
-        {}
-        <FormatterView />
-      </main>
+   return (
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      {/* Header */}
+      <Header isDark={isDark} onThemeToggle={toggleTheme} />
+
+      {/* Tab Navigation */}
+      <TabNavigation activeTool={activeTool} onToolChange={setActiveTool} />
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {activeTool === 'generators' ? (
+          /* Generators Layout: Tools on top, output below */
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-y-auto flex-shrink-0 max-h-[60vh]">
+              <div className="p-6">
+                {renderToolComponent()}
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 min-h-0">
+              <div className="p-6 flex-1 flex flex-col min-h-0">
+                <TextArea
+                  value={output}
+                  onChange={() => {}} 
+                  placeholder="Generated output will appear here..."
+                  label="Generated Output"
+                  readOnly
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+            <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 min-h-0">
+              <div className="p-6 flex-1 flex flex-col min-h-0">
+                <TextArea
+                  value={input}
+                  onChange={setInput}
+                  placeholder="Paste or type your text here..."
+                  label="Input"
+                  onClear={() => {
+                    setInput('');
+                    setOutput('');
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col bg-white dark:bg-gray-800 min-h-0">
+              <div className="border-b border-gray-200 dark:border-gray-700 overflow-y-auto flex-shrink-0 max-h-[40vh] lg:max-h-[50vh]">
+                <div className="p-6">
+                  {renderToolComponent()}
+                </div>
+              </div>
+
+              {/* Output Section */}
+              <div className="flex-1 flex flex-col min-h-0">
+                <div className="p-6 flex-1 flex flex-col min-h-0">
+                  <TextArea
+                    value={output}
+                    onChange={() => {}}
+                    placeholder="Processed output will appear here..."
+                    label="Output"
+                    readOnly
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {toolNeedsInput && <StatsBar stats={stats} />}
     </div>
   );
 }
