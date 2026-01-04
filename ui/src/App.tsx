@@ -32,16 +32,12 @@ function App() {
 
    return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      {/* Header */}
       <Header isDark={isDark} onThemeToggle={toggleTheme} />
 
-      {/* Tab Navigation */}
       <TabNavigation activeTool={activeTool} onToolChange={setActiveTool} />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {activeTool === 'generators' ? (
-          /* Generators Layout: Tools on top, output below */
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-y-auto flex-shrink-0 max-h-[60vh]">
               <div className="p-6">
@@ -84,7 +80,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Output Section */}
               <div className="flex-1 flex flex-col min-h-0">
                 <div className="p-6 flex-1 flex flex-col min-h-0">
                   <TextArea
