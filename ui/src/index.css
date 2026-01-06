@@ -37,7 +37,6 @@ code {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -139,7 +138,6 @@ input[type="range"]::-moz-range-thumb:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* Animation utilities */
 @keyframes slideIn {
   from {
     opacity: 0;
