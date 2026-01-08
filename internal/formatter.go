@@ -27,13 +27,32 @@ func marshalInterface() ([]byte, error) {
 	return bytes, nil
 }
 
-func kvJson() {
+func kvJson() ([]byte, error) {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		return fmt.Errorf("failed to retreive data", err)
+		return nil, fmt.Errorf("failed to retrieve data", err)
 	}
 	entries := strings.Split(input, "\n")[0]
 	data := make(map[string]string)
 
+	delimiters := ":,="
+	index := strings.IndexAny(entries, delimiters)
+
+	if index != -1 {
+		keypart := entries[:index]
+		valuepart := entries[index+1:]
+
+		key := strings.TrimSpace(keypart)
+		value := strings.TrimSpace(valuepart)
+
+		data[key] = value
+		kv, err := json.MarshalIndent(data, "", " ")
+		if err != nil {
+			return nil, fmt.Errorf("error in key value pair: %v", err)
+		}
+		return kv, nil
+	}
+
+	return nil, fmt.Errorf("no valid key-value pair found")
 }
