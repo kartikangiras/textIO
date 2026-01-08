@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 )
 
-func marshalInterface() ([]byte, error) {
+func marshalInterface(input string) ([]byte, error) {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -27,7 +28,7 @@ func marshalInterface() ([]byte, error) {
 	return bytes, nil
 }
 
-func kvJson() ([]byte, error) {
+func kvJson(input string) ([]byte, error) {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -55,4 +56,22 @@ func kvJson() ([]byte, error) {
 	}
 
 	return nil, fmt.Errorf("no valid key-value pair found")
+}
+
+func minifyCSS(input string) ([]byte, error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return nil, fmt.Errorf("failed to read the data: %v", err)
+	}
+
+	regex := regexp.MustCompile(`/\*[\s\S]*?\*/`)
+	minified := regex.ReplaceAllString(input, "")
+
+	minified = strings.ReplaceAll(minified, "\n", "")
+	minified = strings.ReplaceAll(minified, "\t", "")
+	minified = regexp.MustCompile(`\s+`).ReplaceAllString(minified, " ")
+	minified = strings.TrimSpace(minified)
+
+	return []byte(minified), nil
 }
