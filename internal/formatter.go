@@ -116,3 +116,20 @@ func encodeurl(input string) (any, error) {
 
 	return encoder, nil
 }
+
+func decodeurl(input string) (any, error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve data: %v", err)
+	}
+
+	decoder, err := url.QueryUnescape(input)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode url")
+	}
+
+	return decoder, nil
+}
