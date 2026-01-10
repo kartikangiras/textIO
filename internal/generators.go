@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+
+	"github.com/google/uuid"
 )
 
 func generateSHA256(input string) ([]byte, error) {
@@ -22,4 +24,15 @@ func generateSHA256(input string) ([]byte, error) {
 	return []byte(hashstring), nil
 }
 
-func 
+func generateUUID(input string) ([]byte, error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve data: %v", err)
+	}
+
+	id := uuid.New()
+
+	return []byte(id.String()), nil
+}
