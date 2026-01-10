@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bufio"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -74,4 +75,16 @@ func minifyCSS(input string) ([]byte, error) {
 	minified = strings.TrimSpace(minified)
 
 	return []byte(minified), nil
+}
+
+func encodebase64(input string) (any, error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retreive the data: %v", err)
+	}
+	encoded := base64.StdEncoding.EncodetoString([]byte(input))
+
+	return encoded, nil
 }
