@@ -24,15 +24,10 @@ func generateSHA256(input string) ([]byte, error) {
 	return []byte(hashstring), nil
 }
 
-func generateUUID(input string) ([]byte, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve data: %v", err)
-	}
-
+func generateUUID() ([]byte, error) {
 	id := uuid.New()
 
 	return []byte(id.String()), nil
 }
+
+func generatePassword(input)
