@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"regexp"
 	"strings"
 	"unicode/utf8"
 )
@@ -20,4 +21,12 @@ func getTextStats(input string) (int, int, int, int, error) {
 		}
 	}
 	return characterCount, wordCount, lineCount, noSpaceCount, nil
+}
+
+func cleanUpText(input string) (string, error) {
+	cleaned := strings.TrimSpace(input)
+
+	reg := regexp.MustCompile('\s+')
+	collpased := regexp.ReplaceAllString(input, " ")
+
 }
