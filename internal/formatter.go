@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -101,4 +102,17 @@ func decodebase64(input string) (any, error) {
 		return nil, fmt.Errorf("failed to decode: %v", err)
 	}
 	return decoded, nil
+}
+
+func encodeurl(input string) (any, error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve data: %v", err)
+	}
+
+	encoder := url.QueryEscape(input)
+
+	return encoder, nil
 }
