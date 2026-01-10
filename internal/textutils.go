@@ -26,7 +26,7 @@ func getTextStats(input string) (int, int, int, int, error) {
 func cleanUpText(input string) (string, error) {
 	cleaned := strings.TrimSpace(input)
 
-	reg := regexp.MustCompile('\s+')
-	collpased := regexp.ReplaceAllString(input, " ")
+	collapsed := regexp.MustCompile(`\s+`).ReplaceAllString(cleaned, " ")
 
+	return collapsed, nil
 }
