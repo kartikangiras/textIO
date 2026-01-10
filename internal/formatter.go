@@ -88,3 +88,17 @@ func encodebase64(input string) (any, error) {
 
 	return encoded, nil
 }
+
+func decodebase64(input string) (any, error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve data: %v", err)
+	}
+	decoded, err := base64.StdEncoding.DecodeString(input)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode: %v", err)
+	}
+	return decoded, nil
+}
