@@ -85,7 +85,7 @@ func encodebase64(input string) (any, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to retreive the data: %v", err)
 	}
-	encoded := base64.StdEncoding.EncodetoString([]byte(input))
+	encoded := base64.StdEncoding.EncodeToString([]byte(input))
 
 	return encoded, nil
 }
