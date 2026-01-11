@@ -12,7 +12,7 @@ func getTextStats(input string) (int, int, int, int, error) {
 	words := strings.Fields(input)
 	wordCount := len(words)
 
-	lineCount := strings.Count(input, "\n") + 
+	lineCount := strings.Count(input, "\n") + 1
 
 	noSpaceCount := 0
 	for _, r := range input {
