@@ -30,3 +30,7 @@ func cleanUpText(input string) (string, error) {
 
 	return collapsed, nil
 }
+
+func ConvertCase(input string) (string, error) {
+
+}
