@@ -32,5 +32,39 @@ func cleanUpText(input string) (string, error) {
 }
 
 func ConvertCase(input string) (string, error) {
+	words := splitIntoWords(input)
 
+	// 2. Switch Logic: Reassemble based on the target
+	switch strings.ToLower(caseType) {
+	case "upper":
+		// Example: "HELLO WORLD"
+		return strings.ToUpper(strings.Join(words, " "))
+
+	case "lower":
+		// Example: "hello world"
+		return strings.ToLower(strings.Join(words, " "))
+
+	case "pascal":
+		// Example: "HelloWorld"
+		var sb strings.Builder
+		for _, w := range words {
+			sb.WriteString(capitalize(w))
+		}
+		return sb.String()
+
+	case "camel":
+		// Example: "helloWorld"
+		var sb strings.Builder
+		for i, w := range words {
+			if i == 0 {
+				sb.WriteString(strings.ToLower(w))
+			} else {
+				sb.WriteString(capitalize(w))
+			}
+		}
+		return sb.String()
+
+	default:
+		return input
+	}
 }
