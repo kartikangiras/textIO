@@ -30,22 +30,3 @@ func cleanUpText(input string) (string, error) {
 
 	return collapsed, nil
 }
-
-func ConvertCase(input string) (string, error) {
-	words := splitIntoWords(input)
-
-	switch strings.ToLower(caseType) {
-	case "upper":
-		return strings.ToUpper(strings.Join(words, " "))
-
-	case "lower":
-
-		return strings.ToLower(strings.Join(words, " "))
-
-	case "pascal":
-
-		var sb strings.Builder
-		for _, w := range words {
-			sb.WriteString(capitalize(w))
-		}
-		return sb.String()
