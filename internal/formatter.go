@@ -16,7 +16,7 @@ func marshalInterface(input string) ([]byte, error) {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		return nil, fmt.Errorf("failed to reterive data", err)
+		return nil, fmt.Errorf("failed to reterive data: %v", err)
 	}
 
 	var data interface{}
@@ -34,7 +34,7 @@ func kvJson(input string) ([]byte, error) {
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve data", err)
+		return nil, fmt.Errorf("failed to retrieve data: %v", err)
 	}
 	entries := strings.Split(input, "\n")[0]
 	data := make(map[string]string)
