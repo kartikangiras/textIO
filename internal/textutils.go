@@ -49,20 +49,3 @@ func ConvertCase(input string) (string, error) {
 			sb.WriteString(capitalize(w))
 		}
 		return sb.String()
-
-	case "camel":
-
-		var sb strings.Builder
-		for i, w := range words {
-			if i == 0 {
-				sb.WriteString(strings.ToLower(w))
-			} else {
-				sb.WriteString(capitalize(w))
-			}
-		}
-		return sb.String()
-
-	default:
-		return input
-	}
-}
