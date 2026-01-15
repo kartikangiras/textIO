@@ -42,4 +42,5 @@ func convertCase(input string) (string error) {
 		return fmt.Errorf("failed to retrieve data: %v", err)
 	}
 
+	switch (upper) :
 }
