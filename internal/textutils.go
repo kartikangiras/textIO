@@ -1,6 +1,9 @@
 package internal
 
 import (
+	"bufio"
+	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -29,4 +32,14 @@ func cleanUpText(input string) (string, error) {
 	collapsed := regexp.MustCompile(`\s+`).ReplaceAllString(cleaned, " ")
 
 	return collapsed, nil
+}
+
+func convertCase(input string) (string error) {
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+
+	if err != nil {
+		return fmt.Errorf("failed to retrieve data: %v", err)
+	}
+
 }
