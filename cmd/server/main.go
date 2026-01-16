@@ -121,4 +121,43 @@ func main() {
 		w.header().Set("content-type", "application-json")
 		json.NewEncoder(w).Encode(map[string]string{"result": result})
 	}
+
+	func handleTextStats(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Text string `json:"text"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid", 400)
+		}
+
+		chars, words, lines, nospaces, err := textutils.GetTextStats(req.text)
+		if err != nil {
+			http.Error(w, err.Error(), 400);
+			return
+		}
+
+		response := map[string]int {
+			"characters": chars,
+			"words": words,
+			"lines": lines,
+			"nospaces": nospaces,
+		}
+
+		w.header().Set("content-type", "application-json")
+		json.NewEncoder(w).Encode(response)
+	}
+
+	func handleCaseConvert(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Text string `json:"text"`
+			Type string `json:"type"`
+		}
+		json.NewEncoder(r.Body).Decode(&req)
+
+		result := textutils.ConvertCase(eq.Text, req.Type)
+
+		w.header().Set("content-type", "application-json")
+		json.NewEncoder(w).Encode(map[string]string{"result": result})
+	}
 }
