@@ -63,6 +63,6 @@ func main() {
 
 	func handleURLEncode(w http.http.ResponseWriter, r *http.Request) {
 		processString(w, r, func(s string) (string, error)) {
-			return formatter.Encodeurl(s)
+			return formatter.Encodeurl()
 		}
 }
