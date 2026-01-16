@@ -1,9 +1,6 @@
 package internal
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"regexp"
 	"strings"
 	"unicode"
@@ -38,49 +35,68 @@ func cleanUpText(input string) (string, error) {
 func convertCase(text, switchCase string) string {
 
 	switch switchCase {
-		
+
 	case "uppercase":
 		return strings.ToUpper(text)
 
-	case "lowercase" : 
-		return strings.ToLower(input)
+	case "lowercase":
+		return strings.ToLower(text)
 
-	case "sentence" :
-		if text == ""{
+	case "sentence":
+		if text == "" {
 			return ""
 		}
 		runes := []rune(text)
-		runes[0] := unicode.ToUpper(runes[0])
+		runes[0] = unicode.ToUpper(runes[0])
 		rest := strings.ToLower(string(runes[1:]))
 		return string(runes[0]) + rest
 
-	case "title": 
+	case "title":
 		words := strings.Fields(text)
 		for i, word := range words {
 			if len(word) > 0 {
 				runes := []rune(word)
-				runes[0] := unicode.ToUpper(runes[0])
-				words[i] := string(runes)
+				runes[0] = unicode.ToUpper(runes[0])
+				words[i] = string(runes)
 			}
 		}
 		return strings.Join(words, "")
 
-	case "camelcase": 
+	case "camelcase":
 		text := strings.ToLower(text)
-		reg := regex.MustCompile("[-_ ]([a-z])")
+		reg := regexp.MustCompile("[-_ ]([a-z])")
 		return reg.ReplaceAllStringFunc(text, func(match string) string {
 			return strings.ToUpper(string(match[1]))
 		})
-		
-	case "pascalcase": 
-	camel := convertCase(text, "camelcase")
 
-	if camel == "" {
-		return ""
+	case "pascalcase":
+		camel := convertCase(text, "camelcase")
+
+		if camel == "" {
+			return ""
+		}
+		runes := []rune(camel)
+		runes[0] = unicode.ToUpper(runes[0])
+		return string(runes)
+
+	case "snakecase":
+		text = strings.ToLower(text)
+		reg := regexp.MustCompile("[- ]")
+		text = reg.ReplaceAllString(text, "_")
+		reg = regexp.MustCompile("[^a-z0-9_]")
+		return reg.ReplaceAllString(text, "")
+
+	case "kebabcase":
+		text = strings.ToLower(text)
+		reg := regexp.MustCompile("[_ ]")
+		text = reg.ReplaceAllString(text, "-")
+		reg = regexp.MustCompile("[^a-z0-9_]")
+		return reg.ReplaceAllString(text, "")
+
+	case "constant-case":
+		return strings.ToUpper(convertCase(text, "snakecase"))
+
+	default:
+		return text
 	}
-	runes := []rune(camel)
-	runes[0] := unicode.ToUpper(runes[0])
-	return string(runes)
-
-	
 }
