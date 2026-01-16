@@ -7,7 +7,7 @@ import (
 	"unicode/utf8"
 )
 
-func getTextStats(input string) (int, int, int, int, error) {
+func GetTextStats(input string) (int, int, int, int, error) {
 	characterCount := utf8.RuneCountInString(input)
 
 	words := strings.Fields(input)
@@ -24,7 +24,7 @@ func getTextStats(input string) (int, int, int, int, error) {
 	return characterCount, wordCount, lineCount, noSpaceCount, nil
 }
 
-func cleanUpText(input string) (string, error) {
+func CleanUpText(input string) (string, error) {
 	cleaned := strings.TrimSpace(input)
 
 	collapsed := regexp.MustCompile(`\s+`).ReplaceAllString(cleaned, " ")
@@ -32,7 +32,7 @@ func cleanUpText(input string) (string, error) {
 	return collapsed, nil
 }
 
-func convertCase(text, switchCase string) string {
+func ConvertCase(text, switchCase string) string {
 
 	switch switchCase {
 
@@ -70,7 +70,7 @@ func convertCase(text, switchCase string) string {
 		})
 
 	case "pascalcase":
-		camel := convertCase(text, "camelcase")
+		camel := ConvertCase(text, "camelcase")
 
 		if camel == "" {
 			return ""
@@ -94,7 +94,7 @@ func convertCase(text, switchCase string) string {
 		return reg.ReplaceAllString(text, "")
 
 	case "constant-case":
-		return strings.ToUpper(convertCase(text, "snakecase"))
+		return strings.ToUpper(ConvertCase(text, "snakecase"))
 
 	default:
 		return text

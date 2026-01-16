@@ -1,24 +1,16 @@
 package internal
 
 import (
-	"bufio"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 )
 
-func marshalInterface(input string) ([]byte, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		return nil, fmt.Errorf("failed to reterive data: %v", err)
-	}
-
+func MarshalInterface(input string) (string, error) {
 	var data interface{}
 	if err := json.Unmarshal([]byte(input), &data); err != nil {
 		log.Fatalf("error unmarshaling json: %v", err)
@@ -27,15 +19,10 @@ func marshalInterface(input string) ([]byte, error) {
 	if err != nil {
 		log.Fatalf("error indentation of json: %v", err)
 	}
-	return bytes, nil
+	return string(bytes), nil
 }
 
-func kvJson(input string) ([]byte, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve data: %v", err)
-	}
+func KvJson(input string) (string, error) {
 	entries := strings.Split(input, "\n")[0]
 	data := make(map[string]string)
 
@@ -52,21 +39,14 @@ func kvJson(input string) ([]byte, error) {
 		data[key] = value
 		kv, err := json.MarshalIndent(data, "", " ")
 		if err != nil {
-			return nil, fmt.Errorf("error in key value pair: %v", err)
+			return "", fmt.Errorf("error in key value pair: %v", err)
 		}
-		return kv, nil
+		return string(kv), nil
 	}
-
-	return nil, fmt.Errorf("no valid key-value pair found")
+	return "", fmt.Errorf("no valid key-value delimiter found")
 }
 
-func minifyCSS(input string) ([]byte, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		return nil, fmt.Errorf("failed to read the data: %v", err)
-	}
-
+func MinifyCSS(input string) (string, error) {
 	regex := regexp.MustCompile(`/\*[\s\S]*?\*/`)
 	minified := regex.ReplaceAllString(input, "")
 
@@ -75,61 +55,32 @@ func minifyCSS(input string) ([]byte, error) {
 	minified = regexp.MustCompile(`\s+`).ReplaceAllString(minified, " ")
 	minified = strings.TrimSpace(minified)
 
-	return []byte(minified), nil
+	return strings.TrimSpace(minified), nil
 }
 
-func encodebase64(input string) (any, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retreive the data: %v", err)
-	}
+func Encodebase64(input string) (string, error) {
 	encoded := base64.StdEncoding.EncodeToString([]byte(input))
 
 	return encoded, nil
 }
 
-func decodebase64(input string) (any, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve data: %v", err)
-	}
+func Decodebase64(input string) (string, error) {
 	decoded, err := base64.StdEncoding.DecodeString(input)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode: %v", err)
+		return "", fmt.Errorf("failed to decode:")
 	}
-	return decoded, nil
+	return string(decoded), nil
 }
 
-func encodeurl(input string) (any, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve data: %v", err)
-	}
-
+func Encodeurl(input string) (string, error) {
 	encoder := url.QueryEscape(input)
-
 	return encoder, nil
 }
 
-func decodeurl(input string) (any, error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve data: %v", err)
-	}
-
+func Decodeurl(input string) (string, error) {
 	decoder, err := url.QueryUnescape(input)
-
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode url")
+		return "", fmt.Errorf("failed to decode url")
 	}
-
 	return decoder, nil
 }
