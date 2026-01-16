@@ -19,7 +19,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/fmt/json", handleMinfiyCSS)
+	mux.HandleFunc("POST /api/fmt/json", handleMinfyCSS)
 	mux.HandleFunc("POST /api/fmt/json", handleFormatJson)
 	mux.HandleFunc("POST /api/fmt/json", handleKVtoJson)
 	mux.HandleFunc("POST /api/fmt/json", handleEncode64)
@@ -41,5 +41,17 @@ func main() {
 	log.Println("Server starting on http://localhost:8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
+	}
+
+	func handleMinfyCSS(w http.ResponseWriter, r *http.Request) {
+		processString(w, r, formatter.MinifyCSS)
+	}
+
+	func handleFormatJson(w http.http.ResponseWriter, r *http.Request) {
+		processString(w, r, formatter.MarshalInterface)
+	}
+
+	func handleKVtoJson(w http.http.ResponseWriter, r *http.Request) {
+		processString(w, r, formatter.KvJson)
 	}
 }
