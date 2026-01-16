@@ -11,29 +11,31 @@ import (
 
 var uiAssets embed.FS
 
+type StringProcessor func(string) (string, error)
+
 func main() {
 	distFS, err := fs.Sub(uiAssets, "ui/dist")
 	if err != nil {
 		log.Fatal(err)
-	}
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/fmt/json", handleMinfyCSS)
-	mux.HandleFunc("POST /api/fmt/json", handleFormatJson)
-	mux.HandleFunc("POST /api/fmt/json", handleKVtoJson)
-	mux.HandleFunc("POST /api/fmt/json", handleEncode64)
-	mux.HandleFunc("POST /api/fmt/json", handleDecode64)
-	mux.HandleFunc("POST /api/fmt/json", handleURLEncode)
-	mux.HandleFunc("POST /api/fmt/json", handleURLDecode)
+	mux.HandleFunc("POST /api/fmt/css", makeHandler(formatter.MinifyCSS))
+	mux.HandleFunc("POST /api/fmt/json", makeHandler(formatter.formatter.MarshalInterface))
+	mux.HandleFunc("POST /api/fmt/kvjson", makeHandler(formatter.KvJson))
+	mux.HandleFunc("POST /api/fmt/b64dec", makeHandler(formatter.Decodebase64))
+	mux.HandleFunc("POST /api/fmt/b64en", makeHandler(formatter.Encodebase64))
+	mux.HandleFunc("POST /api/fmt/urldec", makeHandler(formatter.Decodeurl))
+	mux.HandleFunc("POST /api/fmt/urlen", makeHandler(formatter.Encodeurl))
 
-	mux.HandleFunc("POST /api/fmt/json", handlePassword)
-	mux.HandleFunc("POST /api/fmt/json", handleSHA256)
-	mux.HandleFunc("GET /api/fmt/json", handleUUID)
+	mux.HandleFunc("POST /api/fmt/clean", makeHandler(textutils.CleanUpText))
 
-	mux.HandleFunc("POST /api/fmt/json", handleCleanUp)
-	mux.HandleFunc("POST /api/fmt/json", handleCaseConvert)
-	mux.HandleFunc("POST /api/fmt/json", handleTextStats)
+	mux.HandleFunc("POST /api/fmt/sha256", makeHandler(generator.GenerateSHA256))
+
+	mux.HandleFunc("POST /api/fmt/uuid", handleUUID)
+	mux.HandleFunc("POST /api/fmt/pass", handlePassword)
+	mux.HandleFunc("POST /api/fmt/case", handleCaseConvert)
+	mux.HandleFunc("POST /api/fmt/stats", handleTextStats)
 
 	fileServer := http.FileServer(http.FS(distFS))
 	mux.Handle("/", fileServer)
@@ -42,38 +44,8 @@ func main() {
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
-
-	func handleMinfyCSS(w http.ResponseWriter, r *http.Request) {
-		processString(w, r, formatter.MinifyCSS)
 	}
-
-	func handleFormatJson(w http.ResponseWriter, r *http.Request) {
-		processString(w, r, formatter.MarshalInterface)
-	}
-
-	func handleKVtoJson(w http.ResponseWriter, r *http.Request) {
-		processString(w, r, formatter.KvJson)
-	}
-
-	func handleEncode64(w http.ResponseWriter, r *http.Request) {
-		processString(w, r, func(s string) (string, error)) {
-			return formatter.Encodebase64(s)
-		}
-	}
-
-	func handleURLEncode(w http.ResponseWriter, r *http.Request) {
-		processString(w, r, func(s string) (string, error)) {
-			return formatter.Encodeurl(s)
-		}
-	}
-
-	func handleDecode64(w http.ResponseWriter,  r *http.Request) {
-		processString(w, r, formatter.Decodebase64)
-	}
-
-	func handleURLDecode(w http.ResponseWriter,  r *http.Request) {
-		processString(w, r, formatter.Decodeurl)
-	}
+}
 
 	func handlePassword(w http.ResponseWriter, r *http.Request) {
 		var req struct {
@@ -89,37 +61,8 @@ func main() {
 			return
 		}
 
-		w.header().Set("content-type", "application-json")
-		json.NewEncoder(w).Encode(map[string]string{"result: pass"})
-	}
-
-	func handleUUID(w http.ResponseWriter, r *http.Request) {
-		idbytes, err := generator.GenerateUUID
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-
-		result := string(idbytes)
-
-		w.header().Set("content-type", "application-json")
-		json.NewEncoder(w).Encode(map[string]string{"result": result})
-	}
-
-	func handleSHA256(w http.ResponseWriter, r *http.Request) {
-		var req struct {
-			Text string `json:"text"`
-		}
-		json.NewDecoder(r.Body).Decode(&req)
-
-		result, err := generator.GenerateSHA256(req.text)
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-
-		w.header().Set("content-type", "application-json")
-		json.NewEncoder(w).Encode(map[string]string{"result": result})
+		w.Header().Set("content-type", "application-json")
+		json.NewEncoder(w).Encode(map[string]string{"result": pass})
 	}
 
 	func handleTextStats(w http.ResponseWriter, r *http.Request) {
@@ -131,7 +74,7 @@ func main() {
 			http.Error(w, "invalid", 400)
 		}
 
-		chars, words, lines, nospaces, err := textutils.GetTextStats(req.text)
+		chars, words, lines, nospaces, err := textutils.GetTextStats(req.Text)
 		if err != nil {
 			http.Error(w, err.Error(), 400);
 			return
@@ -144,7 +87,7 @@ func main() {
 			"nospaces": nospaces,
 		}
 
-		w.header().Set("content-type", "application-json")
+		w.Header().Set("content-type", "application-json")
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -153,11 +96,14 @@ func main() {
 			Text string `json:"text"`
 			Type string `json:"type"`
 		}
-		json.NewEncoder(r.Body).Decode(&req)
+		json.NewEncoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid", 400)
+			return
+		}
 
-		result := textutils.ConvertCase(eq.Text, req.Type)
+		result := textutils.ConvertCase(req.Text, req.Type)
 
-		w.header().Set("content-type", "application-json")
+		w.Header().Set("content-type", "application-json")
 		json.NewEncoder(w).Encode(map[string]string{"result": result})
 	}
 
@@ -166,11 +112,11 @@ func main() {
 			var req struct {
 				Text string `json:"text"`
 			}
-			if err := NewDecoder(r.Body).Decode(&req); err != nil {
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 				http.Error(w, "invalid", 400)
 			}
 
-			result, err := processor(req.text)
+			result, err := processor(req.Text)
 			if err != nil {
 				http.Error(w, err.Error(), 400);
 				return
@@ -180,4 +126,10 @@ func main() {
 			json.NewEncoder(w).Encode(map[string]string{"result": result})
 		}
 	}
-}
+
+	func handleUUID(w http.ResponseWriter, r *http.Request) {
+	result := generator.GenerateUUID()
+	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"result": result})
+	}
