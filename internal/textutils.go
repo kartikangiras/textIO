@@ -38,10 +38,13 @@ func cleanUpText(input string) (string, error) {
 func convertCase(text, switchCase string) string {
 
 	switch switchCase {
+		
 	case "uppercase":
 		return strings.ToUpper(text)
+
 	case "lowercase" : 
 		return strings.ToLower(input)
+
 	case "sentence" :
 		if text == ""{
 			return ""
@@ -50,4 +53,18 @@ func convertCase(text, switchCase string) string {
 		runes[0] := unicode.ToUpper(runes[0])
 		rest := strings.ToLower(string(runes[1:]))
 		return string(runes[0]) + rest
+
+	case "title": 
+		words := strings.Fields(text)
+		for i, word := range words {
+			if len(word) > 0 {
+				runes := []rune(word)
+				runes[0] := unicode.ToUpper(runes[0])
+				words[i] := string(runes)
+			}
+		}
+		return strings.Join(words, "")
+
+	case ""
+		
 }
