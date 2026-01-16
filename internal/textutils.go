@@ -65,6 +65,22 @@ func convertCase(text, switchCase string) string {
 		}
 		return strings.Join(words, "")
 
-	case ""
+	case "camelcase": 
+		text := strings.ToLower(text)
+		reg := regex.MustCompile("[-_ ]([a-z])")
+		return reg.ReplaceAllStringFunc(text, func(match string) string {
+			return strings.ToUpper(string(match[1]))
+		})
 		
+	case "pascalcase": 
+	camel := convertCase(text, "camelcase")
+
+	if camel == "" {
+		return ""
+	}
+	runes := []rune(camel)
+	runes[0] := unicode.ToUpper(runes[0])
+	return string(runes)
+
+	
 }
