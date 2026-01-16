@@ -160,4 +160,24 @@ func main() {
 		w.header().Set("content-type", "application-json")
 		json.NewEncoder(w).Encode(map[string]string{"result": result})
 	}
+
+	func makeHandler(processor StringProcessor) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			var req struct {
+				Text string `json:"text"`
+			}
+			if err := NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, "invalid", 400)
+			}
+
+			result, err := processor(req.text)
+			if err != nil {
+				http.Error(w, err.Error(), 400);
+				return
+			}
+
+			w.header().Set("content-type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"result": result})
+		}
+	}
 }
