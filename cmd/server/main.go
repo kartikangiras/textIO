@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"io/fs"
 	"log"
 	"net/http"
@@ -18,118 +19,123 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 
-	mux := http.NewServeMux()
+		mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/fmt/css", makeHandler(formatter.MinifyCSS))
-	mux.HandleFunc("POST /api/fmt/json", makeHandler(formatter.formatter.MarshalInterface))
-	mux.HandleFunc("POST /api/fmt/kvjson", makeHandler(formatter.KvJson))
-	mux.HandleFunc("POST /api/fmt/b64dec", makeHandler(formatter.Decodebase64))
-	mux.HandleFunc("POST /api/fmt/b64en", makeHandler(formatter.Encodebase64))
-	mux.HandleFunc("POST /api/fmt/urldec", makeHandler(formatter.Decodeurl))
-	mux.HandleFunc("POST /api/fmt/urlen", makeHandler(formatter.Encodeurl))
+		mux.HandleFunc("POST /api/fmt/css", makeHandler(internal.MinifyCSS))
+		mux.HandleFunc("POST /api/fmt/json", makeHandler(internal.MarshalInterface))
+		mux.HandleFunc("POST /api/fmt/kvjson", makeHandler(internal.KvJson))
+		mux.HandleFunc("POST /api/fmt/b64dec", makeHandler(internal.Decodebase64))
+		mux.HandleFunc("POST /api/fmt/b64en", makeHandler(internal.Encodebase64))
+		mux.HandleFunc("POST /api/fmt/urldec", makeHandler(internal.Decodeurl))
+		mux.HandleFunc("POST /api/fmt/urlen", makeHandler(internal.Encodeurl))
 
-	mux.HandleFunc("POST /api/fmt/clean", makeHandler(textutils.CleanUpText))
+		mux.HandleFunc("POST /api/fmt/clean", makeHandler(internal.CleanUpText))
 
-	mux.HandleFunc("POST /api/fmt/sha256", makeHandler(generator.GenerateSHA256))
+		mux.HandleFunc("POST /api/fmt/sha256", makeHandler(internal.GenerateSHA256))
 
-	mux.HandleFunc("POST /api/fmt/uuid", handleUUID)
-	mux.HandleFunc("POST /api/fmt/pass", handlePassword)
-	mux.HandleFunc("POST /api/fmt/case", handleCaseConvert)
-	mux.HandleFunc("POST /api/fmt/stats", handleTextStats)
+		mux.HandleFunc("POST /api/fmt/uuid", handleUUID)
+		mux.HandleFunc("POST /api/fmt/pass", handlePassword)
+		mux.HandleFunc("POST /api/fmt/case", handleCaseConvert)
+		mux.HandleFunc("POST /api/fmt/stats", handleTextStats)
 
-	fileServer := http.FileServer(http.FS(distFS))
-	mux.Handle("/", fileServer)
+		fileServer := http.FileServer(http.FS(distFS))
+		mux.Handle("/", fileServer)
 
-	log.Println("Server starting on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
-		log.Fatal(err)
-	}
+		log.Println("Server starting on http://localhost:8080")
+		if err := http.ListenAndServe(":8080", mux); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-	func handlePassword(w http.ResponseWriter, r *http.Request) {
+func handlePassword(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Length int `json:"length"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid", 400)
+	}
+
+	pass, err := internal.GeneratePassword(req.Length)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	w.Header().Set("content-type", "application-json")
+	json.NewEncoder(w).Encode(map[string]string{"result": pass})
+}
+
+func handleTextStats(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Text string `json:"text"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid", 400)
+	}
+
+	chars, words, lines, nospaces, err := internal.GetTextStats(req.Text)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	response := map[string]int{
+		"characters": chars,
+		"words":      words,
+		"lines":      lines,
+		"nospaces":   nospaces,
+	}
+
+	w.Header().Set("content-type", "application-json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func handleCaseConvert(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Text string `json:"text"`
+		Type string `json:"type"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid", 400)
+		return
+	}
+
+	result := internal.ConvertCase(req.Text, req.Type)
+
+	w.Header().Set("content-type", "application-json")
+	json.NewEncoder(w).Encode(map[string]string{"result": string(result)})
+}
+
+func makeHandler(processor StringProcessor) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
-			Length int `json:"length"`
+			Text string `json:"text"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, "invalid", 400)
+			return
 		}
 
-		pass, err := generator.GeneratePassword(req.Length)
+		result, err := processor(req.Text)
 		if err != nil {
 			http.Error(w, err.Error(), 400)
 			return
 		}
 
-		w.Header().Set("content-type", "application-json")
-		json.NewEncoder(w).Encode(map[string]string{"result": pass})
-	}
-
-	func handleTextStats(w http.ResponseWriter, r *http.Request) {
-		var req struct {
-			Text string `json:"text"`
-		}
-
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "invalid", 400)
-		}
-
-		chars, words, lines, nospaces, err := textutils.GetTextStats(req.Text)
-		if err != nil {
-			http.Error(w, err.Error(), 400);
-			return
-		}
-
-		response := map[string]int {
-			"characters": chars,
-			"words": words,
-			"lines": lines,
-			"nospaces": nospaces,
-		}
-
-		w.Header().Set("content-type", "application-json")
-		json.NewEncoder(w).Encode(response)
-	}
-
-	func handleCaseConvert(w http.ResponseWriter, r *http.Request) {
-		var req struct {
-			Text string `json:"text"`
-			Type string `json:"type"`
-		}
-		json.NewEncoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "invalid", 400)
-			return
-		}
-
-		result := textutils.ConvertCase(req.Text, req.Type)
-
-		w.Header().Set("content-type", "application-json")
+		w.Header().Set("content-type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{"result": result})
 	}
+}
 
-	func makeHandler(processor StringProcessor) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			var req struct {
-				Text string `json:"text"`
-			}
-			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				http.Error(w, "invalid", 400)
-			}
-
-			result, err := processor(req.Text)
-			if err != nil {
-				http.Error(w, err.Error(), 400);
-				return
-			}
-
-			w.header().Set("content-type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{"result": result})
-		}
+func handleUUID(w http.ResponseWriter, r *http.Request) {
+	result, err := internal.GenerateUUID()
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
 	}
 
-	func handleUUID(w http.ResponseWriter, r *http.Request) {
-	result := generator.GenerateUUID()
-	
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"result": result})
-	}
+	json.NewEncoder(w).Encode(map[string]string{"result": string(result)})
+}
