@@ -47,22 +47,78 @@ func main() {
 		processString(w, r, formatter.MinifyCSS)
 	}
 
-	func handleFormatJson(w http.http.ResponseWriter, r *http.Request) {
+	func handleFormatJson(w http.ResponseWriter, r *http.Request) {
 		processString(w, r, formatter.MarshalInterface)
 	}
 
-	func handleKVtoJson(w http.http.ResponseWriter, r *http.Request) {
+	func handleKVtoJson(w http.ResponseWriter, r *http.Request) {
 		processString(w, r, formatter.KvJson)
 	}
 
-	func handleEncode64(w http.http.ResponseWriter, r *http.Request) {
+	func handleEncode64(w http.ResponseWriter, r *http.Request) {
 		processString(w, r, func(s string) (string, error)) {
 			return formatter.Encodebase64(s)
 		}
 	}
 
-	func handleURLEncode(w http.http.ResponseWriter, r *http.Request) {
+	func handleURLEncode(w http.ResponseWriter, r *http.Request) {
 		processString(w, r, func(s string) (string, error)) {
-			return formatter.Encodeurl()
+			return formatter.Encodeurl(s)
 		}
+	}
+
+	func handleDecode64(w http.ResponseWriter,  r *http.Request) {
+		processString(w, r, formatter.Decodebase64)
+	}
+
+	func handleURLDecode(w http.ResponseWriter,  r *http.Request) {
+		processString(w, r, formatter.Decodeurl)
+	}
+
+	func handlePassword(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Length int `json:"length"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "invalid", 400)
+		}
+
+		pass, err := generator.GeneratePassword(req.Length)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+
+		w.header().Set("content-type", "application-json")
+		json.NewEncoder(w).Encode(map[string]string{"result: pass"})
+	}
+
+	func handleUUID(w http.ResponseWriter, r *http.Request) {
+		idbytes, err := generator.GenerateUUID
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+
+		result := string(idbytes)
+
+		w.header().Set("content-type", "application-json")
+		json.NewEncoder(w).Encode(map[string]string{"result": result})
+	}
+
+	func handleSHA256(w http.ResponseWriter, r *http.Request) {
+		var req struct {
+			Text string `json:"text"`
+		}
+		json.NewDecoder(r.Body).Decode(&req)
+
+		result, err := generator.GenerateSHA256(req.text)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+
+		w.header().Set("content-type", "application-json")
+		json.NewEncoder(w).Encode(map[string]string{"result": result})
+	}
 }
