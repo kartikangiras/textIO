@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -45,5 +46,8 @@ func convertCase(text, switchCase string) string {
 		if text == ""{
 			return ""
 		}
-		runes := 
+		runes := []rune(text)
+		runes[0] := unicode.ToUpper(runes[0])
+		rest := strings.ToLower(string(runes[1:]))
+		return string(runes[0]) + rest
 }
