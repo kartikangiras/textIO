@@ -54,4 +54,15 @@ func main() {
 	func handleKVtoJson(w http.http.ResponseWriter, r *http.Request) {
 		processString(w, r, formatter.KvJson)
 	}
+
+	func handleEncode64(w http.http.ResponseWriter, r *http.Request) {
+		processString(w, r, func(s string) (string, error)) {
+			return formatter.Encodebase64(s)
+		}
+	}
+
+	func handleURLEncode(w http.http.ResponseWriter, r *http.Request) {
+		processString(w, r, func(s string) (string, error)) {
+			return formatter.Encodeurl(s)
+		}
 }
