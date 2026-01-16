@@ -34,13 +34,16 @@ func cleanUpText(input string) (string, error) {
 	return collapsed, nil
 }
 
-func convertCase(input string) (string error) {
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
+func convertCase(text, switchCase string) string {
 
-	if err != nil {
-		return fmt.Errorf("failed to retrieve data: %v", err)
-	}
-
-	switch (upper) :
+	switch switchCase {
+	case "uppercase":
+		return strings.ToUpper(text)
+	case "lowercase" : 
+		return strings.ToLower(input)
+	case "sentence" :
+		if text == ""{
+			return ""
+		}
+		runes := 
 }
