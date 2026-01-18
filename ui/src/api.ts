@@ -18,6 +18,6 @@ export async function sendRequest(endpoint: string, payload: unknown) {
     if (err instanceof Error) {
       return `Error: ${err.message}`;
     }
-    return 'Error: Unknown error';
+    return 'Error: 
   }
 }
