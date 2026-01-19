@@ -1,5 +1,4 @@
-import React from 'react';
-// 1. Import your API helper
+import React from 'react';git 
 import { postData } from '../../api';
 import ToolButton from '../../components/ToolButton';
 
@@ -10,12 +9,10 @@ interface TextCleanupProps {
 
 const TextCleanup: React.FC<TextCleanupProps> = ({ input, onOutput }) => {
   
-  // 2. Update the handler to call the API
   const handleCleanup = async (action: string) => {
     if (!input) return;
 
     try {
-      // We send both the 'text' AND the 'action' (e.g., 'removeLineBreaks')
       const data = await postData('/api/text/clean', { 
         text: input, 
         action: action 
