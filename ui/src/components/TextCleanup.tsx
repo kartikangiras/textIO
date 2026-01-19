@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanupText } from '../utils/textUtils';
+import  cleanupText  from '../internal/textUtils';
 import ToolButton from './ToolButton';
 
 interface TextCleanupProps {

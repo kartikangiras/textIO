@@ -1,5 +1,5 @@
 import React from "react";
-import { convertCase } from '../utils/textUtils';
+import { ConvertCase } as ConvertCase from ""
 import ToolButton from './ToolButton';
 
 interface caseConverterProps{
