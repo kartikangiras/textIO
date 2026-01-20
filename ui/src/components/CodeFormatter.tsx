@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { formatJSON, convertKvToJson, minifyCSS } from '../utils/formatters';
-import ToolButton from './ToolButton';
+import { sendRequest } from '../api'; 
+import  formatJSON, convertKvToJson, minifyCSS  from '../utils/formatters';
+import ToolButton from '../components/ToolButton';
 
 interface CodeFormatterProps {
     input: string;

@@ -1,6 +1,6 @@
-import React from 'react';git 
-import { postData } from '../../api';
-import ToolButton from '../../components/ToolButton';
+import React from 'react';
+import { sendRequest } from '../api';
+import ToolButton from '../components/ToolButton';
 
 interface TextCleanupProps {
   input: string;
@@ -13,7 +13,7 @@ const TextCleanup: React.FC<TextCleanupProps> = ({ input, onOutput }) => {
     if (!input) return;
 
     try {
-      const data = await postData('/api/text/clean', { 
+      const data = await sendRequest('/api/text/clean', { 
         text: input, 
         action: action 
       });
@@ -25,7 +25,6 @@ const TextCleanup: React.FC<TextCleanupProps> = ({ input, onOutput }) => {
     }
   };
 
-  // ... (Your 'tools' array remains exactly the same) ...
   const tools = [
     {
       action: 'removeExtraSpaces',
@@ -51,7 +50,6 @@ const TextCleanup: React.FC<TextCleanupProps> = ({ input, onOutput }) => {
 
   return (
     <div className="space-y-6">
-      {/* ... (Your JSX remains exactly the same) ... */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           Text Cleanup Tools
