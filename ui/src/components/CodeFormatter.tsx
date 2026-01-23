@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { sendRequest } from '../api'; 
-import  formatJSON, convertKvToJson, minifyCSS  from '../utils/formatters';
 import ToolButton from '../components/ToolButton';
 
 interface CodeFormatterProps {
@@ -10,19 +9,21 @@ interface CodeFormatterProps {
 
 const CodeFormatter: React.FC<CodeFormatterProps> = ({ input, onOutput }) => {
   const [error, setError] = useState<string>('');
-}
 
 const handleFormat = async (action: string) => {
     setError('');
+
+    const 
     try {
+      const data = await sendRequest('api/text/format', {
+          text : input,
+          type: action
+      });
       let result = '';
       
       switch (action) {
         case 'jsonBeautify':
           result = formatJSON(input, true);
-          break;
-        case 'jsonMinify':
-          result = formatJSON(input, false);
           break;
         case 'kvToJson':
           result = convertKvToJson(input);
@@ -31,10 +32,10 @@ const handleFormat = async (action: string) => {
           result = minifyCSS(input);
           break;
         default:
-          result = input;
+          data.result = input;
       }
       
-      onOutput(result);
+      onOutput(data.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
@@ -113,7 +114,7 @@ const handleFormat = async (action: string) => {
         <code className="text-xs text-blue-700 dark:text-blue-300 block">
           name=Kartik Angiras<br/>
           age=20<br/>
-          city=Mars
+          planet=Mars
         </code>
       </div>
     </div>
