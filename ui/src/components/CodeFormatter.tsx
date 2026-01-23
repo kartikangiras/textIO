@@ -14,9 +14,9 @@ const handleFormat = async (action: string) => {
     setError('');
 
     const endpointMap: Record<string, string> = {
-        'jsonBeautify': 'api/fmt/json',
-        'kvToJson': 'api/fmt/kvjson',
-        'cssMinify': 'api/fmt/css'
+        'jsonBeautify': '/api/fmt/json',
+        'kvToJson': '/api/fmt/kvjson',
+        'cssMinify': '/api/fmt/css'
     }
 
     const endPoint = endpointMap[action];
@@ -26,7 +26,7 @@ const handleFormat = async (action: string) => {
       return;
     } 
     try {
-      const data = await sendRequest('endPoint', {
+      const data = await sendRequest(endPoint, {
           text : input
       });
 

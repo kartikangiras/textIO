@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  encodeBase64, 
-  decodeBase64, 
-  encodeURL, 
-  decodeURL, 
-  generateSHA256 
-} from '../utils/formatters';
+import { sendRequest } from '../api';
 import ToolButton from './ToolButton';
 
 interface EncodingToolsProps {
@@ -20,38 +14,33 @@ const EncodingTools: React.FC<EncodingToolsProps> = ({ input, onOutput }) => {
   const handleEncoding = async (action: string) => {
     setError('');
     setLoading(true);
-    
-    try {
-      let result = '';
-      
-      switch (action) {
-        case 'base64Encode':
-          result = encodeBase64(input);
-          break;
-        case 'base64Decode':
-          result = decodeBase64(input);
-          break;
-        case 'urlEncode':
-          result = encodeURL(input);
-          break;
-        case 'urlDecode':
-          result = decodeURL(input);
-          break;
-        case 'sha256':
-          result = await generateSHA256(input);
-          break;
-        default:
-          result = input;
-      }
-      
-      onOutput(result);
+
+  const endpointMap: Record<string, string> = {
+    'base64Encode': '/api/fmt/b64en',
+    'base64Decode':  '/api/fmt/b64dec',
+    'urlEncode':     '/api/fmt/urlen',
+    'urlDecode':     '/api/fmt/urldec',
+    'sha256':        '/api/fmt/sha256'
+  }
+
+  const endpoint = endpointMap[action]
+
+  if (!endpoint) {
+    setError("unknow action");
+    return;
+  }
+
+  try {
+    const data = await sendRequest(endpoint, {
+      text: input
+    });
+      onOutput(data.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
-}
 
 const tools = [
     {

@@ -12,7 +12,7 @@ const CaseConverter: React.FC<CaseConverterProps> = ({ input, onOutput }) => {
         if (!input.trim()) return;
 
         try {
-            const data = await sendRequest('/api/text/case', {
+            const data = await sendRequest('/api/fmt/case', {
                 text: input,
                 type: caseType
             });
