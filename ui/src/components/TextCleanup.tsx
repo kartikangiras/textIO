@@ -13,7 +13,7 @@ const TextCleanup: React.FC<TextCleanupProps> = ({ input, onOutput }) => {
     if (!input) return;
 
     try {
-      const data = await sendRequest('/api/text/clean', { 
+      const data = await sendRequest('/api/fmt/clean', { 
         text: input, 
         action: action 
       });

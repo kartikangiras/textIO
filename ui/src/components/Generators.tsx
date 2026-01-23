@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateUUID, generatePassword } from '../utils/generators';
+import { sendRequest } from '../api';
 import ToolButton from './ToolButton';
 
 interface GeneratorsProps {
@@ -8,39 +8,33 @@ interface GeneratorsProps {
 
 const Generators: React.FC<GeneratorsProps> = ({ onOutput }) => {
   const [passwordLength, setPasswordLength] = useState<number>(16);
-  const [passwordOptions, setPasswordOptions] = useState({
-    lowercase: true,
-    uppercase: true,
-    numbers: true,
-    symbols: true
-  });
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleUUIDGeneration = (version: 1 | 4) => {
+  const handleUUIDGeneration = async () => {
+    setError('')
+
     try {
-      const uuid = generateUUID(version);
-      onOutput(uuid);
-      setError('');
-    } catch (err) {
+      const data = await sendRequest('/api/fmt/uuid', {});
+      onOutput(data.result);
+    } catch {
       setError('Failed to generate UUID');
     }
   };
 
-  const handlePasswordGeneration = () => {
+  const handlePasswordGeneration = async () => {
+    setError('')
+    setLoading(true);
     try {
-      const password = generatePassword(passwordLength, passwordOptions);
-      onOutput(password);
-      setError('');
+      const data = await sendRequest('/api/fmt/pass', {
+        length: passwordLength
+      })
+      onOutput(data.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate password');
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleOptionChange = (option: keyof typeof passwordOptions) => {
-    setPasswordOptions(prev => ({
-      ...prev,
-      [option]: !prev[option]
-    }));
   };
 
   return (
@@ -72,18 +66,18 @@ const Generators: React.FC<GeneratorsProps> = ({ onOutput }) => {
           
           <div className="flex flex-col gap-3">
             <ToolButton
-              onClick={() => handleUUIDGeneration(4)}
+              onClick={handleUUIDGeneration}
               variant="primary"
               className="w-full"
             >
               Generate UUID v4 (Random)
             </ToolButton>
             <ToolButton
-              onClick={() => handleUUIDGeneration(1)}
+              onClick={handleUUIDGeneration}
               variant="secondary"
               className="w-full"
             >
-              Generate UUID v1 (Timestamp)
+              Generate UUID 
             </ToolButton>
           </div>
         </div>
@@ -115,33 +109,13 @@ const Generators: React.FC<GeneratorsProps> = ({ onOutput }) => {
             </div>
           </div>
           
-          {/* Options */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            {Object.entries(passwordOptions).map(([key, value]) => (
-              <label key={key} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={() => handleOptionChange(key as keyof typeof passwordOptions)}
-                  className="w-4 h-4 text-purple-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
-                />
-                <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
-                  {key === 'lowercase' ? 'a-z' : 
-                   key === 'uppercase' ? 'A-Z' : 
-                   key === 'numbers' ? '0-9' : 
-                   '!@#$%'}
-                </span>
-              </label>
-            ))}
-          </div>
-          
           <ToolButton
             onClick={handlePasswordGeneration}
             variant="primary"
             className="w-full"
-            disabled={!Object.values(passwordOptions).some(Boolean)}
+            disabled={loading}
           >
-            Generate Password
+            {loading ? 'Generating...' : 'Generate Password'}
           </ToolButton>
         </div>
       </div>
