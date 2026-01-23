@@ -1,15 +1,14 @@
-import { useState} from 'react';
-
+import { useState } from 'react';
 import TextCleanup from './components/TextCleanup';
-import CaseConverter  from './components/CaseConverter';
+import CaseConverter from './components/CaseConverter';
 import CodeFormatter from './components/CodeFormatter';
-import EncodingTools  from './components/EncodingTools';
+import EncodingTools from './components/EncodingTools';
 import Generators from './components/Generators';
-
-import  Header  from './components/Header';
-import  TabNavigation  from './components/TabNavigation';
-import  TextArea  from './components/TextArea';
-import  StatsBar  from './components/StatsBar';
+import Header from './components/Header';
+import TabNavigation from './components/TabNavigation';
+import TextArea from './components/TextArea';
+import StatsBar from './components/StatsBar';
+import type { ToolType } from './types';
 
 function App() {
   const [activeTool, setActiveTool] = useState<string>('cleanup');
@@ -18,9 +17,10 @@ function App() {
   const [isDark, setIsDark] = useState<boolean>(false);
 
   const stats = {
-    chars: input.length,
+    characters: input.length,
     words: input.trim() === '' ? 0 : input.trim().split(/\s+/).length,
-    lines: input.split('\n').length,
+    lines: input === '' ? 0 : input.split('\n').length,
+    charactersNoSpaces: input.replace(/\s/g, '').length
   };
 
   const toolNeedsInput = activeTool !== 'generators';
@@ -35,16 +35,6 @@ function App() {
       input: input,          
       onOutput: setOutput    
     };
-
-  const stats = {
-    characters: input.length,
-    // Split by spaces, filter empty strings to avoid counting " " as a word
-    words: input.trim() === '' ? 0 : input.trim().split(/\s+/).length,
-    lines: input === '' ? 0 : input.split('\n').length,
-    // Regex to remove all whitespace and count remainder
-    charactersNoSpaces: input.replace(/\s/g, '').length
-  };
-}
 
     switch(activeTool) {
       case 'cleanup':
@@ -67,7 +57,7 @@ function App() {
       
       <Header isDark={isDark} onThemeToggle={toggleTheme} />
 
-      <TabNavigation activeTool={activeTool} onToolChange={setActiveTool} />
+      <TabNavigation activeTool={activeTool as ToolType} onToolChange={setActiveTool} />
 
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
 
