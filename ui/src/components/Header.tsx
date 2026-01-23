@@ -20,7 +20,6 @@ const Header: React.FC<HeaderProps> = ({ isDark, onThemeToggle }) => {
             </p>
           </div>
         </div>
-        {/* Actions */}
         <div className="flex items-center space-x-3">
           <button
             onClick={onThemeToggle}

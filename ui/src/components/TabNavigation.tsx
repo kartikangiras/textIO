@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToolType } from '../types';
+import type { ToolType } from '../types';
 
 interface TabNavigationProps {
   activeTool: ToolType;
