@@ -13,44 +13,36 @@ const CodeFormatter: React.FC<CodeFormatterProps> = ({ input, onOutput }) => {
 const handleFormat = async (action: string) => {
     setError('');
 
-    const 
-    try {
-      const data = await sendRequest('api/text/format', {
-          text : input,
-          type: action
-      });
-      let result = '';
-      
-      switch (action) {
-        case 'jsonBeautify':
-          result = formatJSON(input, true);
-          break;
-        case 'kvToJson':
-          result = convertKvToJson(input);
-          break;
-        case 'cssMinify':
-          result = minifyCSS(input);
-          break;
-        default:
-          data.result = input;
-      }
-      
-      onOutput(data.result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    const endpointMap: Record<string, string> = {
+        'jsonBeautify': 'api/fmt/json',
+        'kvToJson': 'api/fmt/kvjson',
+        'cssMinify': 'api/fmt/css'
     }
-  };
+
+    const endPoint = endpointMap[action];
+
+    if (!endPoint) {
+      setError("unknown action");
+      return;
+    } 
+    try {
+      const data = await sendRequest('endPoint', {
+          text : input
+      });
+
+      onOutput(data.result)
+
+      }catch(err: unknown) {
+        setError(err instanceof Error ? err.message : "an error occured");
+        console.error(err);
+      }
+};
 
    const tools = [
     {
       action: 'jsonBeautify',
       label: 'Beautify JSON',
       description: 'Format JSON with proper indentation'
-    },
-    {
-      action: 'jsonMinify',
-      label: 'Minify JSON',
-      description: 'Remove whitespace from JSON'
     },
     {
       action: 'kvToJson',
@@ -71,7 +63,7 @@ const handleFormat = async (action: string) => {
           Code & Data Formatter
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
-          Format, minify, and convert code and data structures
+          Format, beautify, and convert code and data structures
         </p>
       </div>
 
