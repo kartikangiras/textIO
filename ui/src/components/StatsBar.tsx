@@ -1,6 +1,13 @@
 import React from "react";
 
-interface statsBarProps {
+export interface TextStats {
+    words: number;
+    characters: number;
+    lines: number;
+    charactersNoSpaces: number;
+}
+
+interface StatsBarProps {
     stats: TextStats;
 }
 
