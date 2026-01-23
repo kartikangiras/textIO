@@ -24,7 +24,7 @@ func GetTextStats(input string) (int, int, int, int, error) {
 	return characterCount, wordCount, lineCount, noSpaceCount, nil
 }
 
-func CleanUpText(input string) (string, error) {
+func CleanUpText(input string, action string) (string, error) {
 	cleaned := strings.TrimSpace(input)
 
 	collapsed := regexp.MustCompile(`\s+`).ReplaceAllString(cleaned, " ")
