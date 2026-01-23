@@ -1,22 +1,19 @@
 package main
 
 import (
-	"embed"
 	"encoding/json"
 	"io/fs"
 	"log"
 	"net/http"
 
 	"github.com/kartikangiras/text-forge/internal"
+	"github.com/kartikangiras/text-forge/ui"
 )
-
-//go:embed all:../../ui/dist
-var uiAssets embed.FS
 
 type StringProcessor func(string) (string, error)
 
 func main() {
-	distFS, err := fs.Sub(uiAssets, "ui/dist")
+	distFS, err := fs.Sub(ui.Assets, "dist")
 	if err != nil {
 		log.Fatal("Frontend build not found:", err)
 	}
