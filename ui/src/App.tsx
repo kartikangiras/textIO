@@ -36,6 +36,16 @@ function App() {
       onOutput: setOutput    
     };
 
+  const stats = {
+    characters: input.length,
+    // Split by spaces, filter empty strings to avoid counting " " as a word
+    words: input.trim() === '' ? 0 : input.trim().split(/\s+/).length,
+    lines: input === '' ? 0 : input.split('\n').length,
+    // Regex to remove all whitespace and count remainder
+    charactersNoSpaces: input.replace(/\s/g, '').length
+  };
+}
+
     switch(activeTool) {
       case 'cleanup':
         return <TextCleanup {...commonProps} />;
