@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Copy, RotateCcw, Check } from 'lucide-react';
-import { copyToClipboard } from '../utils/textUtils';
+import { copyToClipboard } from '../utils';
 import ToolButton from './ToolButton';
 
 interface TextAreaProps {
