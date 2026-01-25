@@ -120,7 +120,11 @@ func handleCaseConvert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := internal.ConvertCase(req.Text, req.Type)
+	result, err := internal.ConvertCase(req.Text, req.Type)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"result": result})
