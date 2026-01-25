@@ -92,9 +92,9 @@ const Generators: React.FC<GeneratorsProps> = ({ onOutput }) => {
           
           {/* Length Slider */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Length: {passwordLength}
-            </label>
+            </span>
             <input
               type="range"
               min="8"

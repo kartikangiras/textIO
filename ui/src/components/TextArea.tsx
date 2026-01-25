@@ -38,9 +38,9 @@ const TextArea: React.FC<TextAreaProps> = ({
    return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
-        </label>
+        </span>
         <div className="flex space-x-2">
           {onClear && (
             <ToolButton
