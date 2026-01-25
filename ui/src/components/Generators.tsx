@@ -17,8 +17,8 @@ const Generators: React.FC<GeneratorsProps> = ({ onOutput }) => {
     try {
       const data = await sendRequest('/api/fmt/uuid', {});
       onOutput(data.result);
-    } catch {
-      setError('Failed to generate UUID');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate UUID');
     }
   };
 
