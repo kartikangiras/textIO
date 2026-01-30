@@ -16,14 +16,14 @@ func GenerateSHA256(input string) (string, error) {
 	return hashstring, nil
 }
 
-func GenerateUUID() ([]byte, error) {
+func GenerateUUID() (string, error) {
 	id := uuid.New()
 
-	return []byte(id.String()), nil
+	return (id.String()), nil
 }
 
 func GeneratePassword(length int) (string, error) {
-	const charset = "abcdermcpxrnMAWIUE4RB3O2QSWD0192837465473OQI2938475RYHDJSNMZKj92837h4rdyenusdhbfuyswniaconst"
+	const charset = "0987654321qwertyuioplkjhgfdsazxvbnmx/;-+=!@#$%^&*"
 	password := make([]byte, length)
 
 	for i := range password {
