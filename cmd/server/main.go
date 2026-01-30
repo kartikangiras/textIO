@@ -138,7 +138,7 @@ func handleUUID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"result": string(result)})
+	json.NewEncoder(w).Encode(map[string]string{"result": (result)})
 }
 
 func makeHandler(processor StringProcessor) http.HandlerFunc {
